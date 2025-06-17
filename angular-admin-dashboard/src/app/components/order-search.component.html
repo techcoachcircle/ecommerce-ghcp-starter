@@ -1,0 +1,24 @@
+<div class="order-search">
+  <input
+    type="text"
+    [(ngModel)]="orderId"
+    placeholder="Enter Order ID"
+    [disabled]="loading"
+  />
+  <button (click)="searchOrder()" [disabled]="loading || !orderId">
+    Search
+  </button>
+  <div *ngIf="loading">Loading...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+  <div *ngIf="order" class="order-details">
+    <h3>Order Details</h3>
+    <table>
+      <tr><td><b>ID</b></td><td>{{ order.id }}</td></tr>
+      <tr><td><b>User ID</b></td><td>{{ order.userId }}</td></tr>
+      <tr><td><b>Product ID</b></td><td>{{ order.productId }}</td></tr>
+      <tr><td><b>Quantity</b></td><td>{{ order.quantity }}</td></tr>
+      <tr><td><b>Total Price</b></td><td>{{ order.totalPrice }}</td></tr>
+      <tr><td><b>Status</b></td><td>{{ order.status }}</td></tr>
+    </table>
+  </div>
+</div>

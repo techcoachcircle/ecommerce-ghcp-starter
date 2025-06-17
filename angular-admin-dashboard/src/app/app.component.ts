@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { OrderListComponent } from './components/order-list/order-list.component';
-import { InventoryManagementComponent } from './components/inventory-management/inventory-management.component';
+import { OrderSearchComponent } from './components/order-search.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, OrderListComponent, InventoryManagementComponent],
+  imports: [RouterOutlet, OrderSearchComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
