@@ -1,4 +1,4 @@
-CREATE TABLE Orders (
+CREATE TABLE if not exists Orders (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
     product_id INTEGER NOT NULL,
