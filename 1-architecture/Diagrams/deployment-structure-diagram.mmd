@@ -1,0 +1,85 @@
+---
+title: Ecommerce System Deployment Structure (C4 Container Diagram)
+---
+
+%% C4 Container Diagram for Ecommerce System
+
+flowchart TD
+    subgraph Web
+        WebFrontend["Web Frontend"]
+        AdminFrontend["Admin Frontend"]
+    end
+    APIGateway["API Gateway"]
+    AuthenticationService["Authentication Service"]
+    UserService["User Service"]
+    ProductCatalogService["Product Catalog Service"]
+    InventoryService["Inventory Service"]
+    CartService["Cart Service"]
+    OrderService["Order Service"]
+    PaymentService["Payment Service"]
+    ShippingLogisticsService["Shipping & Logistics Service"]
+    ReviewRatingService["Review & Rating Service"]
+    PromotionService["Promotion Service"]
+    NotificationService["Notification Service"]
+    AnalyticsReportingService["Analytics & Reporting Service"]
+    FraudDetectionService["Fraud Detection Service"]
+    CustomerSupportService["Customer Support Service"]
+    CacheService["Cache Service"]
+    FileStorageService["File Storage Service"]
+    MonitoringLoggingService["Monitoring & Logging Service"]
+    TaxComplianceService["Tax Compliance Service"]
+    subgraph Databases
+        MainDB["Main Database"]
+        CacheDB["Cache DB"]
+        FileStorage["File Storage"]
+        AnalyticsDB["Analytics DB"]
+    end
+
+    WebFrontend -->|REST/HTTPS| APIGateway
+    AdminFrontend -->|REST/HTTPS| APIGateway
+    APIGateway --> AuthenticationService
+    APIGateway --> UserService
+    APIGateway --> ProductCatalogService
+    APIGateway --> InventoryService
+    APIGateway --> CartService
+    APIGateway --> OrderService
+    APIGateway --> PaymentService
+    APIGateway --> ShippingLogisticsService
+    APIGateway --> ReviewRatingService
+    APIGateway --> PromotionService
+    APIGateway --> NotificationService
+    APIGateway --> CustomerSupportService
+    APIGateway --> AnalyticsReportingService
+    APIGateway --> FraudDetectionService
+    APIGateway --> TaxComplianceService
+
+    AuthenticationService --> MainDB
+    UserService --> MainDB
+    ProductCatalogService --> MainDB
+    InventoryService --> MainDB
+    CartService --> MainDB
+    CartService --> CacheService
+    CartService --> CacheDB
+    OrderService --> MainDB
+    PaymentService --> MainDB
+    ShippingLogisticsService --> MainDB
+    ReviewRatingService --> MainDB
+    PromotionService --> MainDB
+    NotificationService --> MainDB
+    CustomerSupportService --> MainDB
+    AnalyticsReportingService --> AnalyticsDB
+    FraudDetectionService --> MainDB
+    TaxComplianceService --> MainDB
+    FileStorageService --> FileStorage
+    MonitoringLoggingService --> MainDB
+
+    NotificationService --> FileStorageService
+    ProductCatalogService --> FileStorageService
+    UserService --> FileStorageService
+    OrderService --> FileStorageService
+
+    MonitoringLoggingService -->|Logs/Monitoring| AllServices((All Services))
+    AllServices -.-> MonitoringLoggingService
+
+    classDef db fill:#f9f,stroke:#333,stroke-width:2px;
+    class MainDB,CacheDB,FileStorage,AnalyticsDB db;
