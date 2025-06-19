@@ -1,0 +1,83 @@
+---
+title: User Registration API Class Diagram
+---
+classDiagram
+    class UserRegistrationController {
+        - user_service: UserService
+        + register_user(request)
+        - _format_response(data, status_code)
+    }
+    class UserService {
+        - user_repository: UserRepository
+        - password_hasher: PasswordHasher
+        - validator: Validator
+        + register_user(registration_data)
+        - _validate_input(registration_data)
+        - _check_duplicate(email)
+    }
+    class UserRepository {
+        - db_session
+        + create_user(user)
+        + get_user_by_email(email)
+    }
+    class User {
+        - id: str
+        - email: str
+        - password_hash: str
+        - role: str
+        - created_at: datetime
+        - profile: UserProfile
+        + set_password(password)
+        + check_password(password)
+    }
+    class UserProfile {
+        - name: str
+        - address: str
+        - phone: str
+        - avatar_url: str
+        - date_of_birth: str
+    }
+    class UserRegistrationRequest {
+        - email: str
+        - password: str
+        - name: str
+        - address: str
+        - phone: str
+        - role: str
+        + validate()
+    }
+    class UserResponse {
+        - id: str
+        - email: str
+        - role: str
+        - created_at: str
+        - profile: dict
+        + from_user(user)
+    }
+    class ErrorResponse {
+        - error: str
+        - message: str
+        + to_dict()
+    }
+    class PasswordHasher {
+        + hash_password(password)
+        + verify_password(password, hash)
+    }
+    class Validator {
+        + validate_email(email)
+        + validate_password(password)
+        + validate_phone(phone)
+    }
+
+    UserRegistrationController --> UserService
+    UserService --> UserRepository
+    UserService --> PasswordHasher
+    UserService --> Validator
+    UserService --> User
+    UserService --> ErrorResponse
+    UserService --> UserResponse
+    UserRepository --> User
+    User --> UserProfile
+    UserRegistrationRequest --> Validator
+    UserResponse --> User
+    UserResponse --> UserProfile

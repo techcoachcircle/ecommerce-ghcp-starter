@@ -1,0 +1,102 @@
+---
+title: User Registration API Class Diagram (Java Spring Boot)
+---
+
+classDiagram
+    class UserRegistrationController {
+        +registerUser(request: UserRegistrationRequest): ResponseEntity<UserResponse>
+    }
+    class UserService {
+        +registerUser(request: UserRegistrationRequest): UserResponse
+        +isEmailTaken(email: String): boolean
+    }
+    class UserRepository {
+        +save(user: User): User
+        +findByEmail(email: String): Optional<User>
+        +existsByEmail(email: String): boolean
+    }
+    class UserProfileRepository {
+        +save(profile: UserProfile): UserProfile
+        +findByUserId(userId: UUID): Optional<UserProfile>
+    }
+    class PasswordEncoder {
+        +encode(rawPassword: CharSequence): String
+        +matches(rawPassword: CharSequence, encodedPassword: String): boolean
+    }
+    class EmailService {
+        +sendRegistrationConfirmation(email: String, name: String): void
+        +sendPasswordReset(email: String, resetLink: String): void
+    }
+    class User {
+        +id: UUID
+        +email: String
+        +passwordHash: String
+        +role: Role
+        +createdAt: DateTime
+        +updatedAt: DateTime
+        +isActive: boolean
+    }
+    class UserProfile {
+        +id: UUID
+        +userId: UUID
+        +name: String
+        +address: String
+        +phone: String
+        +avatarUrl: String
+        +dateOfBirth: Date
+    }
+    class UserRegistrationRequest {
+        +email: String
+        +password: String
+        +name: String
+        +address: String
+        +phone: String
+        +role: String
+    }
+    class UserResponse {
+        +id: UUID
+        +email: String
+        +role: String
+        +createdAt: DateTime
+        +profile: UserProfile
+    }
+    class ErrorResponse {
+        +error: String
+        +message: String
+    }
+    class Role {
+        <<enumeration>>
+        CUSTOMER
+        SELLER
+        ADMIN
+    }
+    class UserAlreadyExistsException {
+        +UserAlreadyExistsException(message: String)
+    }
+    class InvalidInputException {
+        +InvalidInputException(message: String)
+    }
+    class GlobalExceptionHandler {
+        +handleUserAlreadyExists(ex: UserAlreadyExistsException): ResponseEntity<ErrorResponse>
+        +handleInvalidInput(ex: InvalidInputException): ResponseEntity<ErrorResponse>
+        +handleOtherExceptions(ex: Exception): ResponseEntity<ErrorResponse>
+    }
+
+    %% Relationships
+    UserRegistrationController --> UserService : uses
+    UserService --> UserRepository : uses
+    UserService --> UserProfileRepository : uses
+    UserService --> PasswordEncoder : uses
+    UserService --> EmailService : uses
+    UserService --> UserAlreadyExistsException : throws
+    UserService --> InvalidInputException : throws
+    UserService --> UserResponse : returns
+    UserService --> ErrorResponse : returns
+    UserRepository --> User : manages
+    UserProfileRepository --> UserProfile : manages
+    User --> Role : has
+    User --> UserProfile : 1 -- 1
+    UserResponse --> UserProfile : has
+    GlobalExceptionHandler --> ErrorResponse : returns
+    GlobalExceptionHandler --> UserAlreadyExistsException : handles
+    GlobalExceptionHandler --> InvalidInputException : handles

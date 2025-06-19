@@ -1,0 +1,29 @@
+---
+title: User Registration API Sequence Diagram (Java Spring Boot)
+---
+sequenceDiagram
+    participant Client
+    participant UserRegistrationController
+    participant UserService
+    participant UserRepository
+    participant UserProfileRepository
+    participant PasswordEncoder
+    participant EmailService
+    participant GlobalExceptionHandler
+
+    Client->>UserRegistrationController: POST /users/register (UserRegistrationRequest)
+    UserRegistrationController->>UserService: registerUser(request)
+    UserService->>UserRepository: existsByEmail(email)
+    alt Email already exists
+        UserService-->>UserRegistrationController: throw UserAlreadyExistsException
+        UserRegistrationController->>GlobalExceptionHandler: handleUserAlreadyExists()
+        GlobalExceptionHandler-->>Client: 409 Conflict (ErrorResponse)
+    else Email does not exist
+        UserService->>PasswordEncoder: encode(password)
+        UserService->>UserRepository: save(User)
+        UserService->>UserProfileRepository: save(UserProfile)
+        UserService->>EmailService: sendRegistrationConfirmation(email, name)
+        UserService-->>UserRegistrationController: UserResponse
+        UserRegistrationController-->>Client: 201 Created (UserResponse)
+    end
+    Note over UserService,UserRegistrationController: Validation errors or other exceptions are handled by GlobalExceptionHandler and returned as ErrorResponse

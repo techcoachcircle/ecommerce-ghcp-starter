@@ -1,0 +1,26 @@
+---
+title: User Registration Sequence Diagram
+---
+
+sequenceDiagram
+    participant User as User (UI)
+    participant RegisterComponent
+    participant UserService
+    participant API as Backend API
+    participant DB as Database
+
+    User->>RegisterComponent: Fill registration form
+    RegisterComponent->>RegisterComponent: Validate form fields
+    RegisterComponent->>UserService: Call registerUser(request)
+    UserService->>API: POST /users/register (UserRegistrationRequest)
+    API->>DB: Store new user and profile
+    DB-->>API: Success/Failure
+    alt Registration Success
+        API-->>UserService: 201 UserResponse
+        UserService-->>RegisterComponent: UserResponse
+        RegisterComponent-->>User: Show success message
+    else Registration Error
+        API-->>UserService: 4xx/5xx ErrorResponse
+        UserService-->>RegisterComponent: ErrorResponse
+        RegisterComponent-->>User: Show error message
+    end

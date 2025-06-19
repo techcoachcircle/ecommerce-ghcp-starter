@@ -1,0 +1,129 @@
+openapi: 3.0.3
+info:
+  title: ShopSphere User Registration API
+  version: 1.0.0
+  description: |
+    API for registering new users on the ShopSphere e-commerce platform. Handles user creation, validation, and error scenarios as per PRD and entity definitions.
+servers:
+  - url: https://api.shopsphere.com/v1
+paths:
+  /users/register:
+    post:
+      summary: Register a new user
+      description: |
+        Registers a new user (Customer, Seller, or Admin) with email, password, and profile information. Handles validation, duplicate emails, and returns appropriate error messages for all edge cases.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+                - name
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: Unique email address for the user
+                password:
+                  type: string
+                  minLength: 8
+                  maxLength: 64
+                  pattern: '^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*()_+\-=]{8,64}$'
+                  description: Password (min 8 chars, at least 1 letter and 1 number)
+                name:
+                  type: string
+                  description: Full name of the user
+                address:
+                  type: string
+                  description: Shipping/billing address (optional at registration)
+                phone:
+                  type: string
+                  pattern: '^\+?[0-9\- ]{7,20}$'
+                  description: Contact phone number (optional)
+                role:
+                  type: string
+                  enum: [Customer, Seller, Admin]
+                  default: Customer
+                  description: User role (default Customer)
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Invalid input (missing/invalid fields, weak password, etc.)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Email already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Unprocessable Entity (e.g., invalid phone/address format)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Too many registration attempts (rate limit)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+          enum: [Customer, Seller, Admin]
+        createdAt:
+          type: string
+          format: date-time
+        profile:
+          type: object
+          properties:
+            name:
+              type: string
+            address:
+              type: string
+            phone:
+              type: string
+            avatarUrl:
+              type: string
+              format: uri
+            dateOfBirth:
+              type: string
+              format: date
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+      required:
+        - error
+        - message

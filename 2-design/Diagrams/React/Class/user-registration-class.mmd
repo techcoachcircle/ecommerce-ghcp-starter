@@ -1,0 +1,89 @@
+---
+title: User Registration Class Diagram
+---
+classDiagram
+    %% React Function Components
+    class RegisterForm {
+        +props: object
+        +state: object
+        +handleChange(event): void
+        +handleSubmit(event): void
+        +setError(error: string): void
+        +setSuccess(message: string): void
+    }
+    class RegisterFormFields {
+        +props: object
+        +onChange(event): void
+    }
+    class RegisterFormProfileFields {
+        +props: object
+        +onChange(event): void
+    }
+    class RegisterFormRoleSelector {
+        +props: object
+        +onChange(event): void
+    }
+    class RegisterFormError {
+        +props: object
+    }
+    class RegisterFormSuccess {
+        +props: object
+    }
+
+    %% Service and Utility Classes
+    class UserRegistrationService {
+        +baseUrl: string
+        +registerUser(request: UserRegistrationRequest): Promise~UserResponse~
+        -handleError(error: any): ErrorResponse
+    }
+    class FormValidator {
+        +validateEmail(email: string): boolean
+        +validatePassword(password: string): boolean
+        +validateFields(request: UserRegistrationRequest): boolean
+    }
+
+    %% Types/Interfaces
+    class UserRegistrationRequest {
+        +email: string
+        +password: string
+        +name: string
+        +address: string
+        +phone: string
+        +role: "Customer"|"Seller"|"Admin"
+    }
+    class UserProfile {
+        +name: string
+        +address: string
+        +phone: string
+        +avatarUrl: string
+        +dateOfBirth: string
+    }
+    class UserResponse {
+        +id: string
+        +email: string
+        +role: "Customer"|"Seller"|"Admin"
+        +createdAt: string
+        +profile: UserProfile
+    }
+    class ErrorResponse {
+        +error: string
+        +message: string
+    }
+
+    %% Relationships
+    RegisterForm --> RegisterFormFields : uses
+    RegisterForm --> RegisterFormProfileFields : uses
+    RegisterForm --> RegisterFormRoleSelector : uses
+    RegisterForm --> RegisterFormError : uses
+    RegisterForm --> RegisterFormSuccess : uses
+    RegisterForm --> UserRegistrationService : uses
+    RegisterForm --> UserRegistrationRequest : creates
+    RegisterFormFields --> UserRegistrationRequest : uses
+    RegisterFormProfileFields --> UserProfile : uses
+    RegisterFormRoleSelector --> UserRegistrationRequest : uses
+    RegisterFormError --> ErrorResponse : uses
+    RegisterFormSuccess --> UserResponse : uses
+    UserRegistrationService --> UserRegistrationRequest : uses
+    UserRegistrationService --> UserResponse : returns
+    UserRegistrationService --> ErrorResponse : returns
+    FormValidator --> UserRegistrationRequest : validates

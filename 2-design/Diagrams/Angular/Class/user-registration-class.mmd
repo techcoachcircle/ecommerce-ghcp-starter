@@ -1,0 +1,55 @@
+---
+title: User Registration Class Diagram
+---
+
+classDiagram
+    class RegisterComponent {
+        - registrationForm: FormGroup
+        - isLoading: boolean
+        - errorMessage: string
+        + ngOnInit(): void
+        + onSubmit(): void
+        - handleSuccess(response: UserResponse): void
+        - handleError(error: ErrorResponse): void
+        - buildForm(): void
+    }
+    class UserService {
+        - http: HttpClient
+        - apiUrl: string
+        + registerUser(request: UserRegistrationRequest): Observable~UserResponse~
+    }
+    class UserRegistrationRequest {
+        + email: string
+        + password: string
+        + name: string
+        + address: string
+        + phone: string
+        + role: string
+    }
+    class UserResponse {
+        + id: string
+        + email: string
+        + role: string
+        + createdAt: string
+        + profile: UserProfile
+    }
+    class UserProfile {
+        + name: string
+        + address: string
+        + phone: string
+        + avatarUrl: string
+        + dateOfBirth: string
+    }
+    class ErrorResponse {
+        + error: string
+        + message: string
+    }
+
+    RegisterComponent --> UserService : uses
+    RegisterComponent ..> UserResponse : handles
+    RegisterComponent ..> ErrorResponse : handles
+    RegisterComponent --> UserRegistrationRequest : builds
+    UserService --> UserRegistrationRequest : uses
+    UserService --> UserResponse : returns
+    UserService --> ErrorResponse : returns
+    UserResponse --> UserProfile : contains

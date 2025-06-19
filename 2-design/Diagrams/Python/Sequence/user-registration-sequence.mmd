@@ -1,0 +1,35 @@
+---
+title: User Registration API Sequence Diagram
+---
+sequenceDiagram
+    participant Client
+    participant Controller as UserRegistrationController
+    participant Service as UserService
+    participant Validator
+    participant Repository as UserRepository
+    participant Hasher as PasswordHasher
+    participant Model as User
+    participant Response as UserResponse
+    participant Error as ErrorResponse
+
+    Client->>Controller: POST /users/register (registration data)
+    Controller->>Service: register_user(data)
+    Service->>Validator: validate_email, validate_password, validate_phone
+    Validator-->>Service: Validation result
+    Service->>Repository: get_user_by_email(email)
+    Repository-->>Service: User exists?
+    alt Email exists
+        Service->>Error: Create ErrorResponse (409)
+        Error-->>Controller: ErrorResponse
+        Controller-->>Client: Return error response
+    else Email does not exist
+        Service->>Hasher: hash_password(password)
+        Hasher-->>Service: password_hash
+        Service->>Model: Create User (with profile)
+        Service->>Repository: create_user(user)
+        Repository-->>Service: Persisted user
+        Service->>Response: from_user(user)
+        Response-->>Service: UserResponse
+        Service-->>Controller: UserResponse
+        Controller-->>Client: Return success response (201)
+    end

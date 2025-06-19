@@ -1,0 +1,42 @@
+---
+title: User Registration Sequence Diagram
+---
+
+sequenceDiagram
+    actor User as User
+    participant RegisterForm as RegisterForm
+    participant RegisterFormFields as RegisterFormFields
+    participant RegisterFormProfileFields as RegisterFormProfileFields
+    participant RegisterFormRoleSelector as RegisterFormRoleSelector
+    participant FormValidator as FormValidator
+    participant UserRegistrationService as UserRegistrationService
+    participant API as User Registration API
+    participant RegisterFormError as RegisterFormError
+    participant RegisterFormSuccess as RegisterFormSuccess
+
+    User->>RegisterForm: Open registration page
+    RegisterForm->>RegisterFormFields: Render core fields (email, password, name)
+    RegisterForm->>RegisterFormProfileFields: Render profile fields (address, phone, etc)
+    RegisterForm->>RegisterFormRoleSelector: Render role selector
+    User->>RegisterFormFields: Enter email, password, name
+    User->>RegisterFormProfileFields: Enter address, phone, etc (optional)
+    User->>RegisterFormRoleSelector: Select role (optional)
+    User->>RegisterForm: Submit registration form
+    RegisterForm->>FormValidator: Validate input fields
+    alt Validation fails
+        FormValidator-->>RegisterForm: Return validation errors
+        RegisterForm->>RegisterFormError: Show error messages
+    else Validation passes
+        FormValidator-->>RegisterForm: Validation success
+        RegisterForm->>UserRegistrationService: Call registerUser(request)
+        UserRegistrationService->>API: POST /users/register
+        alt API returns error
+            API-->>UserRegistrationService: ErrorResponse
+            UserRegistrationService-->>RegisterForm: Return error
+            RegisterForm->>RegisterFormError: Show API error
+        else API returns success
+            API-->>UserRegistrationService: UserResponse
+            UserRegistrationService-->>RegisterForm: Return success
+            RegisterForm->>RegisterFormSuccess: Show success message
+        end
+    end

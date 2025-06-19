@@ -1,0 +1,39 @@
+---
+title: User Registration API Sequence Diagram (C#)
+---
+sequenceDiagram
+    participant Client
+    participant UserController
+    participant UserService
+    participant IUserRepository
+    participant User
+    participant UserProfile
+    participant ValidationUtilities
+    participant ErrorResponse
+    participant UserResponse
+
+    Client->>UserController: POST /users/register (UserRegistrationRequest)
+    UserController->>ValidationUtilities: ValidateEmail/Password/Phone
+    ValidationUtilities-->>UserController: Validation result
+    alt Invalid input
+        UserController-->>ErrorResponse: Create error response
+        UserController-->>Client: 400/422 ErrorResponse
+    else Valid input
+        UserController->>UserService: RegisterUser(UserRegistrationRequest)
+        UserService->>IUserRepository: IsEmailTaken(email)
+        IUserRepository-->>UserService: bool
+        alt Email exists
+            UserService-->>ErrorResponse: Create error response
+            UserService-->>UserController: 409 ErrorResponse
+            UserController-->>Client: 409 ErrorResponse
+        else Email available
+            UserService->>User: Create User entity
+            UserService->>User: SetPassword (hash password)
+            UserService->>UserProfile: Create UserProfile
+            UserService->>IUserRepository: AddUser(User)
+            IUserRepository-->>UserService: Success
+            UserService->>UserResponse: Create UserResponse
+            UserService-->>UserController: 201 UserResponse
+            UserController-->>Client: 201 UserResponse
+        end
+    end

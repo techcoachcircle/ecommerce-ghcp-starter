@@ -1,0 +1,95 @@
+---
+title: User Registration API Class Diagram (C#)
+---
+classDiagram
+    class UserController {
+        +Register(request: UserRegistrationRequest): ActionResult<UserResponse>
+        -_userService: IUserService
+    }
+    class IUserService {
+        <<interface>>
+        +RegisterUser(request: UserRegistrationRequest): UserResponse
+        +IsEmailTaken(email: string): bool
+    }
+    class UserService {
+        +RegisterUser(request: UserRegistrationRequest): UserResponse
+        +IsEmailTaken(email: string): bool
+        -_userRepository: IUserRepository
+    }
+    class IUserRepository {
+        <<interface>>
+        +AddUser(user: User): void
+        +GetUserByEmail(email: string): User
+    }
+    class UserRepository {
+        +AddUser(user: User): void
+        +GetUserByEmail(email: string): User
+        -_dbContext: DbContext
+    }
+    class UserRegistrationRequest {
+        +Email: string
+        +Password: string
+        +Name: string
+        +Address: string
+        +Phone: string
+        +Role: UserRole
+        +Validate(): void
+    }
+    class UserResponse {
+        +Id: Guid
+        +Email: string
+        +Role: UserRole
+        +CreatedAt: DateTime
+        +Profile: UserProfile
+    }
+    class UserProfile {
+        +Name: string
+        +Address: string
+        +Phone: string
+        +AvatarUrl: string
+        +DateOfBirth: Date
+    }
+    class User {
+        +Id: Guid
+        +Email: string
+        +PasswordHash: string
+        +Role: UserRole
+        +CreatedAt: DateTime
+        +Profile: UserProfile
+        +SetPassword(password: string): void
+        +Validate(): void
+    }
+    class ErrorResponse {
+        +Error: string
+        +Message: string
+    }
+    class UserRole {
+        <<enum>>
+        Customer
+        Seller
+        Admin
+    }
+    class ValidationUtilities {
+        <<static>>
+        +ValidateEmail(email: string): bool
+        +ValidatePassword(password: string): bool
+        +ValidatePhone(phone: string): bool
+    }
+    UserController --> IUserService : uses
+    UserController --> UserRegistrationRequest : uses
+    UserController --> UserResponse : returns
+    UserController --> ErrorResponse : returns
+    UserService ..|> IUserService : implements
+    UserService --> IUserRepository : uses
+    UserService --> User : creates
+    UserService --> UserProfile : creates
+    UserService --> UserResponse : creates
+    UserService --> ErrorResponse : creates
+    UserService --> ValidationUtilities : uses
+    IUserRepository <|.. UserRepository : implements
+    UserRepository --> User : persists
+    User --> UserProfile : has
+    User --> UserRole : has
+    UserRegistrationRequest --> UserRole : has
+    UserResponse --> UserProfile : has
+    UserResponse --> UserRole : has
