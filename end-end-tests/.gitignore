@@ -1,6 +1,7 @@
 html-test-report
 test-results
-
+bdd-report.html
+.cucumber-data.json
 
 
 

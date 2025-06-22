@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"name": "2-design",
+			"path": "2-design"
+		},
+		{
+			"name": "0-requirements",
+			"path": "0-requirements"
+		},
+		{
+			"name": "end-end-tests",
+			"path": "end-end-tests"
+		},
+		{
+			"path": "python-user-management-service"
+		}
+	],
+	"settings": {}
+}
