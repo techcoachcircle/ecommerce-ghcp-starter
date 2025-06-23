@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "2-design"
+		},
+		{
+			"path": "end-end-tests"
 		}
 	],
 	"settings": {
